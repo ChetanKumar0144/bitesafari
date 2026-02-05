@@ -16,17 +16,29 @@ class VendorProfileController extends Controller
 
     public function update(Request $request)
     {
+        /** @var \App\Models\Vendor $vendor */
         $vendor = Auth::guard('vendor')->user();
 
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:vendors,email,' . $vendor->id,
-            'phone' => 'nullable|string|max:20',
-            'address' => 'nullable|string|max:500',
+            'name'    => 'required|string|max:100',
+            // Email strictly unique (vendor table mein) aur lowercased validation
+            'email'   => 'required|email:rfc,dns|unique:vendors,email,' . $vendor->id,
+            // Strictly 10 digits only
+            'phone'   => 'required|numeric|digits:10',
+            'address' => 'required|string|max:500',
+        ], [
+            'phone.digits' => 'Mobile number strictly 10 digits ka hona chahiye.',
+            'phone.numeric' => 'Mobile number mein sirf numbers allowed hain.',
         ]);
 
-        $vendor->update($request->only('name','email','phone','address'));
+        // Data Update
+        $vendor->update([
+            'name'    => $request->name,
+            'email'   => strtolower($request->email), // Always save in lowercase
+            'phone'   => $request->phone,
+            'address' => $request->address,
+        ]);
 
-        return redirect()->route('vendor.profile')->with('success', 'Profile updated successfully!');
+        return redirect()->back()->with('success', 'Identity synchronized successfully!');
     }
 }
