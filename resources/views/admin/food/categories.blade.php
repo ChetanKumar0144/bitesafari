@@ -1,85 +1,106 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-indigo-500 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-200 rotate-3">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
-                        </svg>
-                    </div>
-                    <h2 class="text-3xl font-black text-slate-800 dark:text-white tracking-tight italic">
-                        Bite Segments
-                    </h2>
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+            <div class="flex items-center gap-5">
+                <div class="w-14 h-14 bg-indigo-500 rounded-[1.5rem] flex items-center justify-center shadow-2xl shadow-indigo-200 rotate-3 transition-transform hover:rotate-0 duration-500">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                    </svg>
                 </div>
-                <p class="text-slate-500 text-sm font-medium mt-1 ml-13">Organizing the safari flavor-wise</p>
+                <div>
+                    <h2 class="text-3xl font-black text-slate-900 dark:text-white tracking-tighter italic uppercase leading-none">Categories</h2>
+                    <p class="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em] mt-2 italic">Organize your food menu items</p>
+                </div>
             </div>
+
+            <a href="{{ route('admin.categories.create') }}"
+               class="px-8 py-4 bg-indigo-600 text-white rounded-2xl hover:bg-indigo-700 transition-all font-black shadow-xl shadow-indigo-200 dark:shadow-none flex items-center gap-3 active:scale-95 text-[10px] uppercase tracking-[0.2em] italic">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path>
+                </svg>
+                <span>Add New Category</span>
+            </a>
         </div>
     </x-slot>
 
-    <div class="py-12 bg-[#f8fafc] dark:bg-[#050505] min-h-[calc(100vh-10rem)] flex items-center justify-center">
-        <div class="max-w-4xl w-full mx-auto px-4">
+    <div class="py-10 bg-[#f8fafc] dark:bg-[#050505]">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
 
-            <div class="bg-white dark:bg-zinc-900 rounded-[3rem] border border-slate-100 dark:border-zinc-800 shadow-xl overflow-hidden relative">
+            {{-- CATEGORY TABLE --}}
+            <div class="bg-white dark:bg-zinc-900 rounded-[3rem] border border-slate-100 dark:border-zinc-800 overflow-hidden shadow-sm">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50/50 dark:bg-zinc-800/50 border-b border-slate-100 dark:border-zinc-800 text-[9px] font-black uppercase tracking-[0.4em] text-slate-400">
+                                <th class="px-10 py-7">Category Name</th>
+                                <th class="px-10 py-7 text-center">Total Items</th>
+                                <th class="px-10 py-7 text-right">Manage</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-50 dark:divide-zinc-800/50">
+                            @forelse($categories as $category)
+                            <tr class="group hover:bg-slate-50/50 dark:hover:bg-zinc-800/20 transition-all duration-300">
+                                <td class="px-10 py-6">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl flex items-center justify-center text-indigo-600 font-black italic shadow-inner">
+                                            {{ substr($category->name, 0, 1) }}
+                                        </div>
+                                        <span class="text-sm font-black text-slate-800 dark:text-white uppercase italic tracking-tight">{{ $category->name }}</span>
+                                    </div>
+                                </td>
+                                <td class="px-10 py-6 text-center">
+                                    <span class="px-4 py-1.5 bg-slate-100 dark:bg-zinc-800 text-slate-500 rounded-full text-[10px] font-black italic uppercase tracking-wider">
+                                        {{ $category->foods_count ?? 0 }} Items
+                                    </span>
+                                </td>
+                                <td class="px-10 py-6 text-right">
+                                    <div class="flex items-center justify-end gap-3">
+                                        <a href="{{ route('admin.categories.edit', $category) }}"
+                                           class="w-11 h-11 bg-slate-50 dark:bg-zinc-800 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl flex items-center justify-center transition-all">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                        </a>
 
-                <div class="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full -mr-32 -mt-32"></div>
-
-                <div class="p-10 lg:p-16 relative z-10 grid lg:grid-cols-2 gap-12 items-center">
-
-                    {{-- Left Side: Illustration --}}
-                    <div class="flex flex-col items-center justify-center text-center space-y-6">
-                        <div class="w-24 h-24 bg-slate-50 dark:bg-zinc-800 rounded-full flex items-center justify-center">
-                            <svg class="w-12 h-12 text-indigo-500 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <h3 class="text-2xl font-black text-slate-800 dark:text-white">Phase 2: Taxonomy</h3>
-                            <p class="text-slate-500 font-medium text-sm mt-2 leading-relaxed">
-                                We are currently calibrating the classification engine to allow multi-level food categorization.
-                            </p>
-                        </div>
-                    </div>
-
-                    {{-- Right Side: Roadmap --}}
-                    <div class="bg-slate-50 dark:bg-zinc-800/50 rounded-[2rem] p-8 space-y-6">
-                        <h4 class="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Development Roadmap</h4>
-
-                        <div class="space-y-4">
-                            {{-- Step 1 --}}
-                            <div class="flex items-center gap-4 group">
-                                <div class="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-white shrink-0">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                                </div>
-                                <span class="text-sm font-bold text-slate-400 line-through decoration-2">Database Schema Design</span>
-                            </div>
-
-                            {{-- Step 2 --}}
-                            <div class="flex items-center gap-4 group">
-                                <div class="w-8 h-8 rounded-lg bg-indigo-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-indigo-200">
-                                    <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                                </div>
-                                <span class="text-sm font-bold text-slate-700 dark:text-zinc-200">Category CRUD Interface</span>
-                            </div>
-
-                            {{-- Step 3 --}}
-                            <div class="flex items-center gap-4 group opacity-40">
-                                <div class="w-8 h-8 rounded-lg bg-slate-200 dark:bg-zinc-700 flex items-center justify-center text-slate-400 shrink-0">
-                                    <span class="text-xs font-black">03</span>
-                                </div>
-                                <span class="text-sm font-bold text-slate-600 dark:text-zinc-400">Multi-level Nested Tags</span>
-                            </div>
-                        </div>
-
-                        <div class="pt-6 border-t border-slate-200 dark:border-zinc-700">
-                            <button disabled class="w-full py-4 bg-slate-200 dark:bg-zinc-700 text-slate-400 font-black rounded-2xl cursor-not-allowed uppercase tracking-widest text-[10px]">
-                                Module Locked
-                            </button>
-                        </div>
-                    </div>
-
+                                        <button onclick="deleteCategory({{ $category->id }})"
+                                                class="w-11 h-11 bg-slate-50 dark:bg-zinc-800 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl flex items-center justify-center transition-all">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                        </button>
+                                        <form id="delete-form-{{ $category->id }}" action="{{ route('admin.categories.destroy', $category) }}" method="POST" class="hidden">@csrf @method('DELETE')</form>
+                                    </div>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="3" class="py-32 text-center opacity-25">
+                                    <p class="text-sm font-black uppercase tracking-[0.5em] italic">No categories found</p>
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
+
+            <div class="mt-8 flex justify-center">{{ $categories->links() }}</div>
         </div>
     </div>
+
+    {{-- SweetAlert Logic --}}
+    <script>
+        function deleteCategory(id) {
+            Swal.fire({
+                title: 'DELETE CATEGORY?',
+                text: "This will remove the category. Items linked to it might become uncategorized!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#4f46e5', // Indigo-600
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'YES, DELETE',
+                background: document.documentElement.classList.contains('dark') ? '#18181b' : '#ffffff',
+                color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000',
+                customClass: { popup: 'rounded-[2rem] border-4 border-slate-100 dark:border-zinc-800 shadow-2xl' }
+            }).then((result) => {
+                if (result.isConfirmed) { document.getElementById('delete-form-' + id).submit(); }
+            })
+        }
+    </script>
 </x-app-layout>

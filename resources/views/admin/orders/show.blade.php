@@ -76,7 +76,7 @@
                         <div class="relative z-10 space-y-4">
                             <div>
                                 <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Name</p>
-                                <p class="text-lg font-bold italic">{{ $order->customer_name }}</p>
+                                <p class="text-lg font-bold italic">{{ $order->customer->name }}</p>
                             </div>
                             <div>
                                 <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Drop Point</p>

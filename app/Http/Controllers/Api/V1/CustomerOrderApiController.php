@@ -91,18 +91,35 @@ class CustomerOrderApiController extends Controller
             ], 401);
         }
 
+        $messages = [
+            'items.required' => 'Your cart is empty! Please select at least one dish.',
+            'items.min' => 'You must have at least one item in your order.',
+
+            // Using index-less messages for better readability on frontend
+            'items.*.food_id.required' => 'Item ID is missing from your selection.',
+            'items.*.food_id.exists' => 'Sorry, one of the selected items is no longer available.',
+
+            'items.*.quantity.required' => 'Please specify the quantity for all items.',
+            'items.*.quantity.min' => 'Quantity must be at least 1.',
+
+            'address_id.required' => 'Please select a delivery address.',
+            'address_id.exists' => 'The selected address is invalid.',
+
+            'payment_method.required' => 'Please choose a payment method.',
+            'payment_method.in' => 'Selected payment method is not supported (Choose COD or Online).',
+        ];
+
         $validated = $request->validate([
             'items' => 'required|array|min:1',
             'items.*.food_id' => 'required|integer|exists:food,id',
             'items.*.quantity' => 'required|integer|min:1',
             'address_id' => 'required|integer|exists:customer_addresses,id',
             'payment_method' => 'required|string|in:cod,online',
-        ]);
+        ], $messages);
 
         DB::beginTransaction();
 
         try {
-            // ✅ Address check
             $address = CustomerAddress::where('id', $validated['address_id'])
                 ->where('customer_id', $customer->id)
                 ->first();
@@ -202,7 +219,7 @@ class CustomerOrderApiController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Multi-vendor order created',
+                'message' => 'Order created',
                 'data' => $order->load('vendors.items')
             ], 201);
 

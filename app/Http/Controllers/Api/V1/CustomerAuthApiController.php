@@ -26,7 +26,7 @@ class CustomerAuthApiController extends Controller
 
         $customer = Customer::firstOrCreate(
             ['email' => $request->email],
-            ['name' => null, 'phone' => null]
+            ['name' => 'Guest', 'phone' => null]
         );
 
         $otp = rand(100000, 999999);

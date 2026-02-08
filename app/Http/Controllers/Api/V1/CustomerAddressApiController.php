@@ -50,6 +50,21 @@ class CustomerAddressApiController extends Controller
             ], 401);
         }
 
+        $messages = [
+            'label.max' => 'Address label (e.g., Home/Office) is too long. Keep it under 50 characters.',
+
+            'address_line1.required' => 'Street address or House number is required.',
+            'address_line1.max' => 'Address Line 1 is too long.',
+
+            'city.required' => 'Please enter your City.',
+            'state.required' => 'Please enter your State.',
+
+            'postal_code.required' => 'ZIP/Postal code is missing.',
+            'postal_code.max' => 'Please enter a valid Postal code.',
+
+            'is_default.boolean' => 'Invalid value for default address setting.',
+        ];
+
         $validated = $request->validate([
             'label' => 'nullable|string|max:50',
             'address_line1' => 'required|string|max:255',
@@ -59,7 +74,7 @@ class CustomerAddressApiController extends Controller
             'postal_code' => 'required|string|max:20',
             'country' => 'nullable|string|max:100',
             'is_default' => 'nullable|boolean',
-        ]);
+        ], $messages);
 
         // Reset default address if new one is default
         if (!empty($validated['is_default']) && $validated['is_default']) {
@@ -130,6 +145,21 @@ class CustomerAddressApiController extends Controller
             ], 404);
         }
 
+        $messages = [
+            'label.max' => 'The label (e.g. Home, Work) cannot exceed 50 characters.',
+
+            'address_line1.max' => 'Address Line 1 is too long (Max 255 chars).',
+            'address_line2.max' => 'Address Line 2 is too long (Max 255 chars).',
+
+            'city.max' => 'City name is too long.',
+            'state.max' => 'State name is too long.',
+
+            'postal_code.max' => 'Postal code cannot be more than 20 characters.',
+            'country.max' => 'Country name is too long.',
+
+            'is_default.boolean' => 'Please provide a valid true or false value for default address.',
+        ];
+
         $validated = $request->validate([
             'label' => 'nullable|string|max:50',
             'address_line1' => 'nullable|string|max:255',
@@ -139,7 +169,7 @@ class CustomerAddressApiController extends Controller
             'postal_code' => 'nullable|string|max:20',
             'country' => 'nullable|string|max:100',
             'is_default' => 'nullable|boolean',
-        ]);
+        ], $messages);
 
         // Reset default if needed
         if (!empty($validated['is_default']) && $validated['is_default']) {
