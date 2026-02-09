@@ -6,15 +6,15 @@ use App\Models\Food;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
-use App\Models\Vendor;
 use App\Services\FoodService;
 use App\Services\VendorService;
-
+use App\Services\FileService;
 class FoodController extends Controller
 {
     public function __construct(
         protected FoodService $foodService,
-        protected VendorService $vendorService
+        protected VendorService $vendorService,
+        protected FileService $fileService
     ) {}
 
     public function index(Request $request)
@@ -65,7 +65,7 @@ class FoodController extends Controller
         ]);
 
         if($request->hasFile('image')){
-            $validated['image'] = $request->file('image')->store('foods','public');
+            $validated['image'] = $this->fileService->upload($request->file('image'), 'uploads/foods');
         }
 
         $validated['rating'] = $validated['rating'] ?? 4.5;
@@ -97,10 +97,10 @@ class FoodController extends Controller
         ]);
 
         if($request->hasFile('image')){
-            if($food->image && file_exists(storage_path('app/public/'.$food->image))){
-                unlink(storage_path('app/public/'.$food->image));
+            if($food->image) {
+                $this->fileService->delete($food->image);
             }
-            $validated['image'] = $request->file('image')->store('foods','public');
+            $validated['image'] = $this->fileService->upload($request->file('image'), 'uploads/foods');
         }
 
         $validated['rating'] = $validated['rating'] ?? $food->rating ?? 4.5;
@@ -113,12 +113,11 @@ class FoodController extends Controller
 
     public function destroy(Food $food)
     {
+        if($food->image) {
+            $this->fileService->delete($food->image);
+        }
         $this->foodService->delete($food);
         return redirect()->route('food.index')->with('success','Food deleted successfully!');
     }
 
-    public function categories()
-    {
-        return view('admin.food.categories');
-    }
 }

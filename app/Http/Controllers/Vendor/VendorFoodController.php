@@ -4,17 +4,17 @@ namespace App\Http\Controllers\Vendor;
 
 use App\Http\Controllers\Controller;
 use App\Services\FoodService;
+use App\Services\FileService;
 use Illuminate\Http\Request;
 use App\Models\Category;
 
 class VendorFoodController extends Controller
 {
-    protected FoodService $foodService;
 
-    public function __construct(FoodService $foodService)
-    {
-        $this->foodService = $foodService;
-    }
+    public function __construct(
+        protected FoodService $foodService,
+        protected FileService $fileService
+    ) {}
 
     // List all foods for this vendor
     public function index()
@@ -46,7 +46,7 @@ class VendorFoodController extends Controller
         ]);
 
         if($request->hasFile('image')){
-            $data['image'] = $request->file('image')->store('foods','public');
+            $data['image'] = $this->fileService->upload($request->file('image'), 'uploads/foods');
         }
 
         $data['rating'] = $data['rating'] ?? 4.5;
@@ -80,10 +80,10 @@ class VendorFoodController extends Controller
             'rating' => 'nullable|numeric|min:0|max:5',
         ]);
         if($request->hasFile('image')){
-            if($food->image && file_exists(storage_path('app/public/'.$food->image))){
-                unlink(storage_path('app/public/'.$food->image));
+            if($food->image){
+                $this->fileService->delete($food->image);
             }
-            $data['image'] = $request->file('image')->store('foods','public');
+            $data['image'] = $this->fileService->upload($request->file('image'), 'uploads/foods');
         }
 
         $data['rating'] = $data['rating'] ?? $food->rating ?? 4.5;
@@ -98,6 +98,11 @@ class VendorFoodController extends Controller
     public function destroy($foodId)
     {
         $food = $this->foodService->byVendor(auth('vendor')->id())->where('id', $foodId)->firstOrFail();
+
+        if($food->image){
+            $this->fileService->delete($food->image);
+        }
+
         $this->foodService->delete($food);
 
         return redirect()->route('vendor.foods.index')->with('success', 'Food deleted successfully');

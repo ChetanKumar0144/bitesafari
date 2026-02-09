@@ -6,9 +6,14 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Category;
 use Illuminate\Support\Str;
+use App\Services\FileService;
 
 class CategoryController extends Controller
 {
+    public function __construct(
+        protected FileService $fileService
+    ) {}
+
     // 1. List Categories
     public function index() {
         $categories = Category::orderBy('id', 'desc')->get();
@@ -31,6 +36,10 @@ class CategoryController extends Controller
             'slug' => Str::slug($request->name)
         ]);
 
+        if ($request->hasFile('image')) {
+            $data['image'] = $this->fileService->upload($request->file('image'), 'uploads/categories');
+        }
+
         return redirect()->route('admin.categories.index')->with('success', 'New Track Added!');
     }
 
@@ -51,12 +60,22 @@ class CategoryController extends Controller
             'slug' => Str::slug($request->name)
         ]);
 
+        if ($request->hasFile('image')) {
+            if ($category->image) {
+                $this->fileService->delete($category->image);
+            }
+            $data['image'] = $this->fileService->upload($request->file('image'), 'uploads/categories');
+        }
+
         return redirect()->route('admin.categories.index')->with('success', 'Category Updated!');
     }
 
     // 6. Manual Delete
-    public function destroy($id) {
-        Category::findOrFail($id)->delete();
+    public function destroy(Category $category) {
+        if ($category->image) {
+            $this->fileService->delete($category->image);
+        }
+        $category->delete();
         return back()->with('success', 'Track Terminated!');
     }
 }
