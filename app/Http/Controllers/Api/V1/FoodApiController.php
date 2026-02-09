@@ -33,11 +33,11 @@ class FoodApiController extends Controller
                 'description' => $food->description,
                 'category' => $food->category->name ?? 'Uncategorized',
                 'rating' => $food->rating ?? 4.5,
-                'image' => $food->image ? asset('storage/' . $food->image) : asset('storage/foods/no-image.jpg'),
+                'image' => $food->image ? asset($food->image) : asset('storage/foods/no-image.jpg'),
                 'eta' => $this->generateETA(),
             ];
         });
-       
+
         return response()->json([
             'success' => true,
             'current_page' => $foods->currentPage(),
