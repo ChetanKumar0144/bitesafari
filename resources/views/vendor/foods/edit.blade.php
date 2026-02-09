@@ -100,7 +100,7 @@
                         <div class="relative group">
                             <div class="relative h-80 rounded-[2.5rem] overflow-hidden border-8 border-slate-50 dark:border-zinc-800 shadow-2xl bg-slate-100 dark:bg-zinc-800 flex items-center justify-center">
                                 <img id="image-preview"
-                                     src="{{ $food->image ? asset('storage/'.$food->image) : '#' }}"
+                                     src="{{ $food->image ? asset($food->image) : '#' }}"
                                      class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 {{ !$food->image ? 'hidden' : '' }}" />
 
                                 <div id="preview-svg" class="flex flex-col items-center text-slate-300 {{ $food->image ? 'hidden' : '' }}">

@@ -111,8 +111,8 @@
                                     <div class="relative h-72 rounded-[2rem] overflow-hidden border-4 border-slate-50 dark:border-zinc-800 shadow-xl bg-slate-100 dark:bg-zinc-800 flex items-center justify-center">
                                         {{-- Preview Image --}}
                                         <img id="image-preview"
-                                             src="{{ $food->image ? asset('storage/'.$food->image) : '#' }}"
-                                             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 {{ !$food->image ? 'hidden' : '' }}" />
+                                            src="{{ $food->image ? asset($food->image) : '#' }}"
+                                            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 {{ !$food->image ? 'hidden' : '' }}" />
 
                                         {{-- Default SVG --}}
                                         <div id="preview-svg" class="flex flex-col items-center text-slate-400 {{ $food->image ? 'hidden' : '' }}">
