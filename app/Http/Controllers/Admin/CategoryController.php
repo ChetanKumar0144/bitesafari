@@ -30,14 +30,19 @@ class CategoryController extends Controller
 
     // 3. Save Data
     public function store(Request $request) {
-        $request->validate(['name' => 'required|unique:categories,name']);
+        $validatedData = $request->validate([
+            'name' => 'required|unique:categories,name',
+            'image' => 'nullable|image'
+        ]);
 
         $imagePath = null;
         if ($request->hasFile('image')) {
             $imagePath = $this->fileService->upload($request->file('image'), 'uploads/categories');
         }
 
-        $dto = CategoryDTO::fromRequest($request, $imagePath);
+        $dto = CategoryDTO::fromRequest($validatedData, $imagePath);
+        $request->validate(['name' => 'required|unique:categories,name']);
+
         $this->categoryService->createCategory($dto);
 
         return redirect()->route('admin.categories.index')->with('success', 'New Category Added!');
@@ -51,15 +56,27 @@ class CategoryController extends Controller
     }
 
     public function update(Request $request, Category $category) {
-        $request->validate(['name' => 'required|unique:categories,name,' . $category->id]);
+        // 1. Validation karke data array mein le lo
+        $validatedData = $request->validate([
+            'name' => 'required|unique:categories,name,' . $category->id,
+            'image' => 'nullable|image|max:2048',
+            'status' => 'nullable'
+        ]);
 
-        $imagePath = null;
+        $imagePath = $category->image; // Default purani image rakho
+
+        // 2. Agar nayi image aayi hai toh purani delete karke nayi upload karo
         if ($request->hasFile('image')) {
-            if ($category->image) $this->fileService->delete($category->image);
+            if ($category->image) {
+                $this->fileService->delete($category->image);
+            }
             $imagePath = $this->fileService->upload($request->file('image'), 'uploads/categories');
         }
 
-        $dto = CategoryDTO::fromRequest($request, $imagePath);
+        // 3. DTO mein array ($validatedData) pass karein
+        $dto = CategoryDTO::fromRequest($validatedData, $imagePath);
+
+        // 4. Service call
         $this->categoryService->updateCategory($category, $dto);
 
         return redirect()->route('admin.categories.index')->with('success', 'Category Updated!');

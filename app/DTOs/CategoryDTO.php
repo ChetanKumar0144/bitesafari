@@ -12,13 +12,13 @@ class CategoryDTO
         public readonly bool $status = true,
     ) {}
 
-    public static function fromRequest(Request $request, ?string $imagePath = null): self
+    public static function fromRequest(array $data, ?string $imagePath = null): self
     {
         return new self(
-            name: $request->validated('name') ?? $request->name,
-            slug: \Illuminate\Support\Str::slug($request->name),
+            name: $data['name'],
+            slug: \Illuminate\Support\Str::slug($data['name']),
             image: $imagePath,
-            status: $request->status ?? true
+            status: $data['status'] ?? true
         );
     }
 }
