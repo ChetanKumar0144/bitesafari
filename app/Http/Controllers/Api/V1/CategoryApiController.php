@@ -2,20 +2,25 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+
 use App\Http\Controllers\Controller;
-use App\Models\Category;
-use Illuminate\Http\Request;
+use App\Services\CategoryService;
+use Illuminate\Http\JsonResponse;
 
 class CategoryApiController extends Controller
 {
-    public function index()
+    public function __construct(
+        protected CategoryService $categoryService
+    ) {}
+
+    public function index(): JsonResponse
     {
-        $categories = Category::all();
+        $categories = $this->categoryService->getAllCategories();
 
         return response()->json([
-            'status' => true,
+            'status'  => true,
             'message' => 'Category list fetched successfully',
-            'data' => $categories
-        ]);
+            'data'    => $categories
+        ], 200);
     }
 }

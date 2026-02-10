@@ -7,16 +7,19 @@ use Illuminate\Http\Request;
 use App\Models\Category;
 use Illuminate\Support\Str;
 use App\Services\FileService;
+use App\Services\CategoryService;
+use App\DTOs\CategoryDTO;
 
 class CategoryController extends Controller
 {
     public function __construct(
-        protected FileService $fileService
+        protected FileService $fileService,
+        protected CategoryService $categoryService
     ) {}
 
     // 1. List Categories
     public function index() {
-        $categories = Category::orderBy('id', 'desc')->get();
+        $categories = $this->categoryService->getAllCategories();
         return view('admin.categories.index', compact('categories'));
     }
 
@@ -27,20 +30,18 @@ class CategoryController extends Controller
 
     // 3. Save Data
     public function store(Request $request) {
-        $request->validate([
-            'name' => 'required|unique:categories,name'
-        ]);
+        $request->validate(['name' => 'required|unique:categories,name']);
 
-        Category::create([
-            'name' => $request->name,
-            'slug' => Str::slug($request->name)
-        ]);
-
+        $imagePath = null;
         if ($request->hasFile('image')) {
-            $data['image'] = $this->fileService->upload($request->file('image'), 'uploads/categories');
+            $imagePath = $this->fileService->upload($request->file('image'), 'uploads/categories');
         }
 
-        return redirect()->route('admin.categories.index')->with('success', 'New Track Added!');
+        $dto = CategoryDTO::fromRequest($request, $imagePath);
+        $this->categoryService->createCategory($dto);
+
+        return redirect()->route('admin.categories.index')->with('success', 'New Category Added!');
+
     }
 
     // 4. Edit Form
@@ -49,32 +50,23 @@ class CategoryController extends Controller
         return view('admin.categories.edit', compact('category'));
     }
 
-    // 5. Update Data
-    public function update(Request $request, $id) {
-        $category = Category::findOrFail($id);
+    public function update(Request $request, Category $category) {
+        $request->validate(['name' => 'required|unique:categories,name,' . $category->id]);
 
-        $request->validate(['name' => 'required']);
-
-        $category->update([
-            'name' => $request->name,
-            'slug' => Str::slug($request->name)
-        ]);
-
+        $imagePath = null;
         if ($request->hasFile('image')) {
-            if ($category->image) {
-                $this->fileService->delete($category->image);
-            }
-            $data['image'] = $this->fileService->upload($request->file('image'), 'uploads/categories');
+            if ($category->image) $this->fileService->delete($category->image);
+            $imagePath = $this->fileService->upload($request->file('image'), 'uploads/categories');
         }
+
+        $dto = CategoryDTO::fromRequest($request, $imagePath);
+        $this->categoryService->updateCategory($category, $dto);
 
         return redirect()->route('admin.categories.index')->with('success', 'Category Updated!');
     }
 
-    // 6. Manual Delete
     public function destroy(Category $category) {
-        if ($category->image) {
-            $this->fileService->delete($category->image);
-        }
+        if ($category->image) $this->fileService->delete($category->image);
         $category->delete();
         return back()->with('success', 'Track Terminated!');
     }

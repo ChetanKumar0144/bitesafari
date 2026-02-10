@@ -14,6 +14,13 @@ class Category extends Model
         'status'
     ];
 
+    public function getImagePathAttribute()
+    {
+        return $this->image ? asset($this->image) : asset('assets/default-category.png');
+    }
+
+    protected $appends = ['image_path'];
+
     /**
      * Category belongs to many foods
      * Aapne ye relationship pehle hi set ki hai
