@@ -65,8 +65,13 @@ class CategoryController extends Controller
         return redirect()->route('admin.categories.index')->with('success', 'Category Updated!');
     }
 
-    public function destroy(Category $category) {
-        if ($category->image) $this->fileService->delete($category->image);
+    public function destroy($id) {
+        $category = Category::findOrFail($id); // Manual fetch karna padega
+
+        if ($category->image) {
+            $this->fileService->delete($category->image);
+        }
+
         $category->delete();
         return back()->with('success', 'Track Terminated!');
     }

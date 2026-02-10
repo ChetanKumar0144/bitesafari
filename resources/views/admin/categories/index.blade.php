@@ -106,7 +106,11 @@
                                            class="w-12 h-12 flex items-center justify-center bg-white dark:bg-zinc-800 border border-slate-100 dark:border-zinc-700 rounded-2xl hover:bg-rose-500 hover:text-white transition-all shadow-sm">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-width="2.5"/></svg>
                                         </button>
-                                        <form id="delete-form-{{ $category->id }}" action="{{ route('admin.categories.delete', $category->id) }}" method="POST" class="hidden">@csrf @method('DELETE')</form>
+                                        <form id="delete-form-{{ $category->id }}"
+                                            action="{{ route('admin.categories.delete', $category->id) }}"
+                                            method="POST" class="hidden">
+                                            @csrf
+                                        </form>
                                     </div>
                                 </td>
                             </tr>

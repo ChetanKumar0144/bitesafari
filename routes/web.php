@@ -98,7 +98,7 @@ Route::middleware(['auth', 'role:admin'])
             Route::post('/store', 'store')->name('admin.categories.store');
             Route::get('/edit/{id}', 'edit')->name('admin.categories.edit');
             Route::post('/update/{id}', 'update')->name('admin.categories.update');
-            Route::get('/delete/{id}', 'destroy')->name('admin.categories.delete');
+            Route::post('/delete/{category}', 'destroy')->name('admin.categories.delete');
         });
 
         // 📦 Orders Management
