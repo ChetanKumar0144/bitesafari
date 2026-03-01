@@ -10,12 +10,15 @@ use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\AdminVendorController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\VendorApiTesterController;
 
 /*
 |--------------------------------------------------------------------------
 | Public Routes
 |--------------------------------------------------------------------------
 */
+
+Route::get('vendor-api-tester', [VendorApiTesterController::class, 'index'])->name('vendor.api.tester');
 
 Route::get('/', function () {
     // 1. Check if Admin/User is logged in
@@ -144,6 +147,25 @@ Route::middleware(['auth', 'role:user'])
         Route::get('/dashboard', [UserController::class, 'dashboard'])->name('user.dashboard');
     });
 
+
+Route::get('/debug-routes', function () {
+    $routes = collect(Route::getRoutes())->filter(function ($route) {
+        return str_contains($route->uri, 'api/v1/vendor');
+    })->map(function ($route) {
+        return [
+            'method' => $route->methods()[0],
+            'uri'    => $route->uri,
+            'name'   => $route->getName(),
+            'action' => $route->getActionName(),
+            'middleware' => $route->gatherMiddleware(),
+        ];
+    });
+
+    return response()->json([
+        'total_vendor_apis' => $routes->count(),
+        'apis' => $routes->values()
+    ]);
+});
 /*
 |--------------------------------------------------------------------------
 | Auth & Secondary Routes

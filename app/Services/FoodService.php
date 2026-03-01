@@ -35,7 +35,7 @@ class FoodService
 
     public function byVendor(int $vendorId)
     {
-        return Food::where('vendor_id', $vendorId)->paginate(10);
+        return Food::where('vendor_id', $vendorId)->latest()->paginate(10);
     }
 
 }

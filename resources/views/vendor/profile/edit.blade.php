@@ -69,13 +69,6 @@
                                         class="w-full px-6 py-5 bg-slate-50 dark:bg-zinc-800 border-none rounded-[1.5rem] focus:ring-2 focus:ring-amber-500 transition-all text-slate-900 dark:text-white font-bold text-lg shadow-inner" />
                                 </div>
 
-                                {{-- Phone --}}
-                                {{-- <div class="space-y-2">
-                                    <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Contact Number</label>
-                                    <input type="text" name="phone" value="{{ old('phone', $vendor->phone) }}" required
-                                        class="w-full px-6 py-5 bg-slate-50 dark:bg-zinc-800 border-none rounded-[1.5rem] focus:ring-2 focus:ring-amber-500 transition-all text-slate-900 dark:text-white font-bold text-lg shadow-inner" />
-                                </div> --}}
-                                {{-- Phone --}}
                                 <div class="space-y-2">
                                     <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Contact Number</label>
                                     <input type="text"
@@ -100,7 +93,8 @@
                                 required
                                 oninput="this.value = this.value.replace(/\s/g, '').toLowerCase()"
                                 placeholder="merchant@bitesafari.com"
-                                class="w-full px-6 py-5 bg-slate-50 dark:bg-zinc-800 border-none rounded-[1.5rem] focus:ring-2 focus:ring-amber-500 transition-all text-slate-900 dark:text-white font-bold text-lg shadow-inner" />
+                                class="w-full px-6 py-5 bg-slate-50 dark:bg-zinc-800 border-none rounded-[1.5rem] focus:ring-2 focus:ring-amber-500 transition-all text-slate-900 dark:text-white font-bold text-lg shadow-inner"
+                                disabled/>
 
                             @error('email')
                                 <span class="text-rose-500 text-[10px] font-black mt-1 ml-2 block uppercase tracking-tighter">{{ $message }}</span>

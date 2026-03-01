@@ -14,27 +14,35 @@ class VendorProfileController extends Controller
         return view('vendor.profile.edit', compact('vendor'));
     }
 
-    public function update(Request $request)
+   public function update(Request $request)
     {
-        /** @var \App\Models\Vendor $vendor */
         $vendor = Auth::guard('vendor')->user();
+
+        if ($request->has('address')) {
+            $scrubbed = str_replace(["\r", "\n", "\t", "\\", '"', "'"], '', $request->address);
+            $scrubbed = preg_replace('/[^a-zA-Z0-9\s]/', '', $scrubbed);
+            $scrubbed = preg_replace('/\s+/', ' ', trim($scrubbed));
+            $request->merge(['address' => $scrubbed]);
+        }
 
         $request->validate([
             'name'    => 'required|string|max:100',
-            // Email strictly unique (vendor table mein) aur lowercased validation
-            'email'   => 'required|email:rfc,dns|unique:vendors,email,' . $vendor->id,
-            // Strictly 10 digits only
             'phone'   => 'required|numeric|digits:10',
-            'address' => 'required|string|max:500',
+            'address' => [
+                'required',
+                'string',
+                'max:500',
+                'regex:/^[a-zA-Z0-9\s]+$/u'
+            ],
         ], [
-            'phone.digits' => 'Mobile number strictly 10 digits ka hona chahiye.',
-            'phone.numeric' => 'Mobile number mein sirf numbers allowed hain.',
+            'phone.digits'    => 'The mobile number must be exactly 10 digits.',
+            'phone.numeric'   => 'The mobile number must contain only numeric digits.',
+            'address.regex'   => 'The address must not contain special characters. Only letters, numbers, and spaces are allowed.',
         ]);
 
         // Data Update
         $vendor->update([
             'name'    => $request->name,
-            'email'   => strtolower($request->email), // Always save in lowercase
             'phone'   => $request->phone,
             'address' => $request->address,
         ]);
